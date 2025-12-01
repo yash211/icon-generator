@@ -9,7 +9,7 @@ import { swaggerSpec } from "./config/swagger.js";
 import { logger } from "./utils/logger.js";
 import { errorHandler } from "./middleware/errorHandler.js";
 import { requestLogger } from "./middleware/requestLogger.js";
-import { AppError } from "./errors/AppError.js";
+import { NotFoundError } from "./errors/NotFoundError.js";
 
 export class Server {
   private app: Express;
@@ -90,10 +90,7 @@ export class Server {
   private setupErrorHandling(): void {
     // 404 handler
     this.app.use((req: Request, res: Response, next) => {
-      const error = new AppError(
-        `Route ${req.method} ${req.path} not found`,
-        404
-      );
+      const error = new NotFoundError("Route", `${req.method} ${req.path}`);
       next(error);
     });
 

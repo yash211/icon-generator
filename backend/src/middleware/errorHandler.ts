@@ -58,7 +58,7 @@ export function errorHandler(
   };
 
   // Include stack trace in development
-  if (process.env.NODE_ENV === "development") {
+  if (process.env.NODE_ENV === "development" && err.stack) {
     errorResponse.stack = err.stack;
   }
 

@@ -4,8 +4,8 @@ interface LogEntry {
   timestamp: string;
   level: LogLevel;
   message: string;
-  context?: Record<string, unknown>;
-  error?: Error;
+  context?: Record<string, unknown> | undefined;
+  error?: Error | undefined;
 }
 
 export class Logger {
@@ -57,8 +57,8 @@ export class Logger {
       timestamp: new Date().toISOString(),
       level,
       message,
-      context,
-      error,
+      ...(context !== undefined && { context }),
+      ...(error !== undefined && { error }),
     };
 
     const formatted = this.formatMessage(entry);

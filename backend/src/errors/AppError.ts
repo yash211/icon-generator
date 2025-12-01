@@ -12,7 +12,9 @@ export abstract class AppError extends Error {
     super(message);
     this.statusCode = statusCode;
     this.isOperational = isOperational;
-    this.context = context;
+    if (context !== undefined) {
+      this.context = context;
+    }
 
     // Maintains proper stack trace for where our error was thrown
     Error.captureStackTrace(this, this.constructor);
