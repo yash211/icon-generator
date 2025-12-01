@@ -34,22 +34,48 @@ export default function ChatPage() {
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const chatMainRef = useRef<HTMLDivElement>(null);
+  const imagesLoadedRef = useRef(false);
 
   // Scrolls chat container to bottom
-  const scrollToBottom = () => {
+  const scrollToBottom = (forceInstant = false) => {
     if (chatMainRef.current) {
       const container = chatMainRef.current;
-      container.scrollTop = container.scrollHeight;
-    }
-    if (messagesEndRef.current) {
-      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+      // Use requestAnimationFrame for better mobile support
+      requestAnimationFrame(() => {
+        if (chatMainRef.current) {
+          const scrollHeight = chatMainRef.current.scrollHeight;
+          const clientHeight = chatMainRef.current.clientHeight;
+          chatMainRef.current.scrollTop = scrollHeight - clientHeight;
+        }
+        // Also use scrollIntoView as fallback for mobile
+        requestAnimationFrame(() => {
+          if (messagesEndRef.current) {
+            messagesEndRef.current.scrollIntoView({ 
+              behavior: forceInstant ? "auto" : "smooth",
+              block: "end",
+              inline: "nearest"
+            });
+          }
+        });
+      });
     }
   };
 
+  // Handle images loaded callback
+  const handleImagesLoaded = () => {
+    imagesLoadedRef.current = true;
+    // Scroll after images are loaded with a small delay for layout
+    setTimeout(() => {
+      scrollToBottom();
+    }, 150);
+  };
+
   useEffect(() => {
+    imagesLoadedRef.current = false;
+    // Initial scroll for new messages
     const timeoutId = setTimeout(() => {
       scrollToBottom();
-    }, 50);
+    }, 100);
     
     return () => clearTimeout(timeoutId);
   }, [messages, isLoading]);
@@ -157,7 +183,11 @@ export default function ChatPage() {
       <main className="chat-main" ref={chatMainRef}>
         <div className="chat-messages">
           {messages.map((m) => (
-            <ChatMessage key={m.id} message={m} />
+            <ChatMessage 
+              key={m.id} 
+              message={m} 
+              onImagesLoaded={m.images && m.images.length > 0 ? handleImagesLoaded : undefined}
+            />
           ))}
           {isLoading && (
             <div className="message message-assistant loading">
