@@ -39,7 +39,6 @@ export default function ChatPage() {
   // Scrolls chat container to bottom
   const scrollToBottom = (forceInstant = false) => {
     if (chatMainRef.current) {
-      const container = chatMainRef.current;
       // Use requestAnimationFrame for better mobile support
       requestAnimationFrame(() => {
         if (chatMainRef.current) {
@@ -186,7 +185,7 @@ export default function ChatPage() {
             <ChatMessage 
               key={m.id} 
               message={m} 
-              onImagesLoaded={m.images && m.images.length > 0 ? handleImagesLoaded : undefined}
+              onImagesLoaded={m.role === "assistant" && m.images && m.images.length > 0 ? handleImagesLoaded : undefined}
             />
           ))}
           {isLoading && (

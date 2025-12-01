@@ -26,14 +26,14 @@ export default function ChatMessage({ message, onImagesLoaded }: ChatMessageProp
     hasNotifiedRef.current = false;
     loadedCountRef.current = 0;
     
-    if (message.images && message.images.length > 0) {
+    if (message.role === "assistant" && message.images && message.images.length > 0) {
       // Initialize array with correct length
       imageRefs.current = new Array(message.images.length).fill(null);
     } else {
       imageRefs.current = [];
     }
 
-    if (message.images && message.images.length > 0 && onImagesLoaded) {
+    if (message.role === "assistant" && message.images && message.images.length > 0 && onImagesLoaded) {
       // Wait for next frame to ensure refs are set, then check again after a short delay
       const checkImages = () => {
         const images = imageRefs.current.filter(Boolean);
@@ -70,7 +70,11 @@ export default function ChatMessage({ message, onImagesLoaded }: ChatMessageProp
         setTimeout(checkImages, 50);
       });
     }
-  }, [message.id, message.images, onImagesLoaded]);
+  }, [
+    message.id, 
+    message.role === "assistant" ? (message.images?.length ?? 0) : 0,
+    onImagesLoaded
+  ]);
 
   if (message.role === "system") {
     return (
@@ -91,7 +95,7 @@ export default function ChatMessage({ message, onImagesLoaded }: ChatMessageProp
   return (
     <div className="message message-assistant">
       <p>{message.content}</p>
-      {message.images && message.images.length > 0 && (
+      {message.role === "assistant" && message.images && message.images.length > 0 && (
         <div className="image-row">
           {message.images.map((imageUrl, index) => (
             <div
