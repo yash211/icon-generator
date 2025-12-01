@@ -1,4 +1,5 @@
-import { useState, FormEvent, KeyboardEvent } from "react";
+import { useState } from "react";
+import type { FormEvent, KeyboardEvent } from "react";
 import type { IconStyleId } from "../types";
 import { ICON_STYLE_OPTIONS, COLOR_OPTIONS } from "../types";
 import { colorNameToHex } from "../utils/colorConverter";
